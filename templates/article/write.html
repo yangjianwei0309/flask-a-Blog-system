@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>写文章</title>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/jquery-1.11.1.js') }}"></script>
+    <style>
+        #qianyan{
+            color: #843534;
+            text-shadow: yellow;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<h3 id="qianyan">在这里尽情分享你的故事，我愿意倾听！</h3>
+<div id="head"></div>
+<div id="body">
+    <label>标题：</label>
+    <textarea id="title" style="width: 700px;height: 30px"></textarea>
+    <br/><br/>
+    <label>正文：</label>
+    <textarea id="content" style="width: 700px;height: 500px;"></textarea>
+    <br/>
+    <button id="appear" style="width: 50px;height: 25px;background-color: white">发表</button>
+</div>
+<div id="foot"></div>
+</body>
+<script>
+    $("#appear").click(function (obj) {
+        var title = $("#title").val();
+        var content = $("#content").val();
+        {% if id %}
+            var user_id = {{ id }};
+        {% else %}
+            var user_id = "";
+        {% endif %}
+        $.ajax({
+            type : "post",
+            url : "http://127.0.0.1:5000/article/write/" ,
+            data : JSON.stringify({"user_id":user_id,
+                    "title":title,
+                    "content":content}),
+            dataType : "json",
+            contentType : "application/json;charset=utf-8",
+            success : function (data) {
+                alert(data);
+            }
+        })
+    })
+</script>
+</html>

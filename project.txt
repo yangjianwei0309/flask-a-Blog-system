@@ -1,0 +1,96 @@
+# 项目文档
+我的博客
+角色：用户，站点管理员，文章
+功能：1.添加博客文章;
+	  2.用户评论;收藏;
+	  3.管理员（我）可以对文章进行增删改查;
+	  4.实现阅读量，根据阅读量进行排名放在首页;
+
+一、创建模型类
+	user
+	1.用户名
+	2.密码
+	3.收藏的文章
+	（文章与收藏用户是多对多关系）
+
+	4.用户的头像
+	5.[用户的评论]（外键引用，用户与评论是一对多关系）
+
+	admin
+	1.管理员
+	2.密码
+
+	article
+	1.标题
+	2.正文内容
+	3.用户id
+	4.[收藏者id]
+	5.[文章下的所有评论]
+
+	comment
+	1.评论内容
+	2.评论者id（ForeignKey）
+	3.文章id(ForeignKey)
+
+models.py
+
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+
+db = SQLAlchemy()
+
+class User(UserMixin,db.Model):
+    __tablename__ = "user"
+    id = db.Column(db.Integer,primary_key=True,nullable=False)
+    username = db.Column(db.String(64),unique=True,nullable=False)
+    password = db.Column(db.String(128),nullable=False)
+    icon = db.Column(db.String(500),nullable=True)
+    # ablout_me
+    about_me = db.Column(db.String(150),nullable=True)
+    # 建立反向引用
+    comments = db.relationship('Comment',backref='user')
+
+    def __str__(self):
+        return self.username
+
+    def to_dict(self):
+        return dict(id=self.id,
+                    username=self.username,
+                    icon=self.icon,
+                    about_me=self.about_me,
+                    comments=self.comments)
+
+class Comment(db.Model):
+    __tablename__ = "comment"
+    id = db.Column(db.Integer,primary_key=True)
+    # 评论内容
+    content = db.Column(db.String(500))
+    # 外键关联
+    user_id = db.Column(db.Integer,db.ForeignKey("user.id"))
+    article_id = db.Column(db.Integer,db.ForeignKey("article.id"))
+
+# 多对多关系
+ships = db.Table("ships",
+    db.Column('user.id',db.Integer,db.ForeignKey("user.id")),
+    db.Column('article.id',db.Integer,db.ForeignKey("article.id")))
+
+class Article(db.Model):
+    __tablename__ = "article"
+    id = db.Column(db.Integer,primary_key=True)
+    # 文章标题
+    titile = db.Column(db.String(20),nullable=False)
+    # 内容
+    content = db.Column(db.String(5000),nullable=False)
+    user_id = db.Column(db.Integer,db.ForeignKey("user.id"))
+
+    users = db.relationship("User",secondary=ships,backref=
+    db.backref("articles",lazy="dynamic"))
+    # 反向应用
+    comments = db.relationship("Comment",backref="article")
+
+    def to_dict(self):
+        return dict(id=self.id,
+                    title=self.titile,
+                    content=self.content,
+                    user_id=self.user_id)
+

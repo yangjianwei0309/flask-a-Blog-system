@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+</head>
+<body>
+<form action="{{ url_for('user.register') }}" method="post">
+    <p>{{ form.username.label }} {{ form.username }}
+        <span style="color: red;">{{ form.username.errors[0] }}</span>
+    </p>
+{#    {% for message in get_flashed_messages() %}#}
+{#        <span>{{ message }}</span>#}
+{#    {% endfor %}#}
+    <p>{{ form.password.label }} {{ form.password }}
+        <span style="color: red">{{ form.password.errors[0] }}</span>
+    </p>
+{#    {% for message in get_flashed_messages() %}#}
+{#        <span>{{ message }}</span>#}
+{#    {% endfor %}#}
+    <p>{{ form.password2.label }} {{ form.password2 }}
+        <span style="color: red;">{{ form.password2.errors[0] }}</span>
+    </p>
+{#    {% for message in get_flashed_messages() %}#}
+{#        <span>{{ message }}</span>#}
+{#    {% endfor %}#}
+    <input type="submit" value="注册">
+    {% if get_flashed_messages() %}
+    {% set msgs = get_flashed_messages() %}
+    {% for msg in msgs %}
+        <p style="color: blue;">{{ msg }}</p>
+    {% endfor %}
+    {% endif %}
+    {{ form.csrf_token }}
+</form>
+</body>
+</html>

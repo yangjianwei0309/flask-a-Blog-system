@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ article.content[:8] }}</title>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/jquery-1.11.1.js') }}"></script>
+</head>
+<body>
+<h3>{{ article.title }}</h3>
+<br/><br/>
+&nbsp;&nbsp;<p>{{ article.content }}</p>
+<div class="comment">
+    <h3>评论区</h3>
+    <table>
+        {% for comment in article.comments %}
+        <tr>
+            <td>{{ comment.username }}</td>
+            <td width="200px">
+            <td>{{ comment.content }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br/>
+    <hr/>
+    <h4>我的评论</h4>
+        <textarea id="comment" style="width: 700px;height: 200px"></textarea>
+        <br/>
+        <button id="confirm" style="color: blue;">提交</button>
+</div>
+</body>
+<script>
+    $("#confirm").click(function () {
+        var id = {{ article.id }} + "";
+        var data = $("#comment").val();
+        {% if id %}
+            var user_id = {{ id }};
+        {% else %}
+            var user_id = "";
+        {% endif %}
+        var article_id = {{ article.id }}
+        $.ajax({
+            type: "POST",
+            url: "http://127.0.0.1:5000/article/" + id + "/",
+            data: JSON.stringify({"data":data,
+                "user_id":user_id,
+                "article_id":article_id}),
+            contentType: "application/json; charset=utf-8",
+            success: function (resp) {
+                alert(resp);
+            }
+        });
+    })
+</script>
+</html>

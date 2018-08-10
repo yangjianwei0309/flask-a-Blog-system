@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传头像</title>
+</head>
+<body>
+<form action="{{ url_for('user.uploads') }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="icon">
+    <input type="submit" value="上传">
+    {% set msgs = get_flashed_messages() %}
+    {% for msg in msgs %}
+        <span style="color: darkorange;"{{ msg }}></span>
+    {% endfor %}
+    {% if error %}
+    <span style="color:red;" >{{ error }}</span>
+    {% endif %}
+</form>
+</body>
+</html>
